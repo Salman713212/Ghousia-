@@ -188,6 +188,7 @@ document.querySelectorAll("[data-tp]").forEach(function(e){e.placeholder=T(e.dat
 document.querySelectorAll("#langs button").forEach(function(b){b.className=b.dataset.v==L?"on":""});
 }
 function render(){
+if(LM){drawList();return}
 var h="";
 if(S.banner&&S.banner.on&&S.banner.text)h+='<div class="offer hot"><em>🔥</em><span>'+esc(S.banner.text)+'</span></div>';
 offs().slice().reverse().forEach(function(o){h+='<div class="offer"><em>🎁</em><span>'+esc(T("offer",{m:o.m.toLocaleString("en-PK"),t:o.t}))+'</span></div>'});
@@ -296,6 +297,48 @@ else if(a=="pimg")pimg(+d.i,b.files[0]);
 else if(a=="of"){var o=S.offers[+d.i];o[d.f]=d.f=="m"?(+v||0):v;mark()}
 else if(a=="sf"){if(d.f=="bon")S.banner.on=v;else if(d.f=="btext")S.banner.text=v;else if(d.f=="min")S.min=+v||0;else S.wa=String(v).replace(/\D/g,"");mark()}
 });
+var LM=/[?&]list/.test(location.search),LPF=null;
+function lh(w){
+var dt=new Date(),ds=("0"+dt.getDate()).slice(-2)+"/"+("0"+(dt.getMonth()+1)).slice(-2)+"/"+dt.getFullYear();
+var vis=S.products.filter(function(p){return p.on}),cats=[],n=0,rows="";
+vis.forEach(function(p){if(cats.indexOf(p.c)<0)cats.push(p.c)});
+var td="padding:9px 8px;border-bottom:1px solid #cfd9d2;font-size:14px;vertical-align:middle";
+cats.forEach(function(c){
+rows+='<tr><td colspan="5" style="background:#e4f1e9;color:#0f5132;font-weight:800;padding:7px 8px;font-size:13px">'+esc(c)+'</td></tr>';
+vis.filter(function(p){return p.c==c}).forEach(function(p){n++;
+rows+='<tr><td style="'+td+';width:24px;color:#5b6c62">'+n+'</td><td style="'+td+'"><b>'+esc(p.n)+'</b>'+(p.stock?"":' <span style="color:#c0392b;font-size:12px">(Stock khatam)</span>')+'<div style="font-size:11px;color:#5b6c62">'+esc(p.u)+'</div></td><td style="'+td+';text-align:right;white-space:nowrap"><b>'+rs(p.b)+'</b></td><td style="'+td+';text-align:right;white-space:nowrap"><b>'+rs(p.k)+'</b><div style="font-size:11px;color:#5b6c62">'+p.q+' box = '+rs(p.k*p.q)+'</div></td><td style="'+td+';width:80px;border-left:1px solid #cfd9d2;height:44px"></td></tr>'})});
+var of=offs().slice().reverse().map(function(o){return '<div>• Rs '+o.m.toLocaleString("en-PK")+' ki khareedari par <b>'+esc(o.t)+'</b> free</div>'}).join("");
+var th="padding:8px;background:#0f5132;color:#fff;font-size:12px;text-align:left";
+var ln='<span style="display:inline-block;border-bottom:1px solid #12241a;width:';
+return '<div id="lsheet" style="width:'+w+';background:#fff;color:#12241a;font-family:\'Plus Jakarta Sans\',system-ui,sans-serif;padding-bottom:16px"><div style="background:#0f5132;color:#fff;padding:20px 24px"><div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:28px;font-weight:800">Ghousia Traders</div><div style="font-family:\'Noto Nastaliq Urdu\',serif;font-size:20px;line-height:2">ریٹ لسٹ</div></div><div style="font-size:13px;opacity:.9">General &amp; Herbal Wholesale · Karachi</div><div style="font-size:13px;margin-top:6px">Rate List &amp; Order Form · Date: '+ds+' · WhatsApp: 0305 1289250</div></div>'+
+'<div style="padding:14px 24px 6px;font-size:14px">Customer: '+ln+'200px"></span> &nbsp; Mobile: '+ln+'150px"></span> &nbsp; Area: '+ln+'120px"></span></div>'+
+(S.banner&&S.banner.on&&S.banner.text?'<div style="margin:8px 24px;background:#fff4cf;color:#4a3600;border-radius:8px;padding:8px 12px;font-weight:700">'+esc(S.banner.text)+'</div>':"")+
+'<div style="padding:8px 24px"><table style="width:100%;border-collapse:collapse;border:1px solid #cfd9d2"><thead><tr><th style="'+th+'">#</th><th style="'+th+'">Item</th><th style="'+th+';text-align:right">Box rate</th><th style="'+th+';text-align:right">Cotton rate (per box)</th><th style="'+th+'">Qty</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+(of?'<div style="margin:6px 24px;background:#e9f4ed;border-radius:8px;padding:8px 12px;font-size:13px"><b>Free offers</b>'+of+'</div>':"")+
+'<div style="text-align:center;font-size:12px;color:#5b6c62;margin-top:8px">Order WhatsApp par bhejein: 0305 1289250 · Rates badal sakte hain</div></div>'}
+function drawList(){
+document.documentElement.dir="ltr";
+document.body.className="";document.body.style.padding="0";
+document.body.innerHTML='<style>@media print{.np{display:none!important}body{background:#fff}}.lb{border:0;border-radius:10px;padding:11px 14px;font:700 14px inherit;font-family:inherit;background:#1b7a4c;color:#fff}</style><div style="max-width:794px;margin:0 auto;padding:10px"><div class="np" style="display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 10px"><button class="lb" onclick="lpMake()">📄 PDF banayein</button><button class="lb" style="background:#555" onclick="window.print()">🖨 Print</button></div><div class="np" id="lpst" style="margin-bottom:10px"></div>'+lh("100%")+'</div>'}
+function lib(u){return new Promise(function(ok,no){var s=document.createElement("script");s.src=u;s.onload=ok;s.onerror=function(){no(new Error("Library load nahi hui. Internet check karein."))};document.head.appendChild(s)})}
+async function lpMake(){
+var st=document.getElementById("lpst");st.textContent="PDF ban rahi hai… thora intezar karein.";
+try{
+if(!window.html2canvas)await lib("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js");
+if(!window.jspdf)await lib("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
+var el=document.createElement("div");el.style.cssText="position:fixed;left:-10000px;top:0;width:794px";el.innerHTML=lh("794px");document.body.appendChild(el);
+try{await document.fonts.load('16px "Noto Nastaliq Urdu"',"ریٹ");await document.fonts.ready}catch(e){}
+var cv=await html2canvas(el,{scale:2,backgroundColor:"#ffffff"});el.remove();
+var pdf=new window.jspdf.jsPDF("p","mm","a4"),pw=210,ph=297,pH=Math.floor(cv.width*ph/pw);
+for(var off=0,pg=0;off<cv.height;off+=pH,pg++){var sl=document.createElement("canvas");sl.width=cv.width;sl.height=Math.min(pH,cv.height-off);sl.getContext("2d").drawImage(cv,0,off,cv.width,sl.height,0,0,cv.width,sl.height);if(pg)pdf.addPage();pdf.addImage(sl.toDataURL("image/jpeg",.92),"JPEG",0,0,pw,sl.height*pw/cv.width)}
+var d=new Date();
+LPF=new File([pdf.output("blob")],"Ghousia-Rate-List-"+d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)+".pdf",{type:"application/pdf"});
+st.innerHTML='<b>PDF tayyar hai ✅</b> <button class="lb" onclick="lpShare()">📤 Share (WhatsApp)</button> <button class="lb" style="background:#555" onclick="lpDl()">⬇ Download</button>'}
+catch(e){st.textContent="Masla: "+(e&&e.message||e)}}
+async function lpShare(){
+try{if(navigator.canShare&&navigator.canShare({files:[LPF]}))await navigator.share({files:[LPF],title:"Ghousia Traders Rate List"});else lpDl()}catch(e){if(!e||e.name!=="AbortError")lpDl()}}
+function lpDl(){var a=document.createElement("a");a.href=URL.createObjectURL(LPF);a.download=LPF.name;document.body.appendChild(a);a.click();a.remove()}
+
 $("q").oninput=render;
 var inf=ld();if(inf){$("nm").value=inf.nm||"";$("ph").value=inf.ph||""}
 document.querySelectorAll("[data-a=info]").forEach(function(i){i.oninput=function(){if($("sheet").classList.contains("open"))draw()}});
