@@ -188,7 +188,7 @@ document.querySelectorAll("[data-tp]").forEach(function(e){e.placeholder=T(e.dat
 document.querySelectorAll("#langs button").forEach(function(b){b.className=b.dataset.v==L?"on":""});
 }
 function render(){
-if(LM){drawList();return}
+if(LM){drawList();return}if(PM){drawPost();return}
 var h="";
 if(S.banner&&S.banner.on&&S.banner.text)h+='<div class="offer hot"><em>🔥</em><span>'+esc(S.banner.text)+'</span></div>';
 offs().slice().reverse().forEach(function(o){h+='<div class="offer"><em>🎁</em><span>'+esc(T("offer",{m:o.m.toLocaleString("en-PK"),t:o.t}))+'</span></div>'});
@@ -338,6 +338,43 @@ catch(e){st.textContent="Masla: "+(e&&e.message||e)}}
 async function lpShare(){
 try{if(navigator.canShare&&navigator.canShare({files:[LPF]}))await navigator.share({files:[LPF],title:"Ghousia Traders Rate List"});else lpDl()}catch(e){if(!e||e.name!=="AbortError")lpDl()}}
 function lpDl(){var a=document.createElement("a");a.href=URL.createObjectURL(LPF);a.download=LPF.name;document.body.appendChild(a);a.click();a.remove()}
+
+var PM=/[?&]post/.test(location.search),PF=null;
+function drawPost(){
+document.documentElement.dir="ltr";document.body.className="";document.body.style.padding="0";
+var vis=S.products.filter(function(p){return p.on});
+document.body.innerHTML='<style>.pb{border:0;border-radius:10px;padding:10px 14px;font:700 14px inherit;font-family:inherit;background:#1b7a4c;color:#fff}.pc{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid #dbe5de;border-radius:14px;padding:10px;margin:8px 0;color:#12241a}.pc img,.pc .pi{width:64px;height:64px;border-radius:10px;object-fit:cover;flex:none;background:#1b7a4c;color:#fff;display:grid;place-items:center;font-weight:800;font-size:24px}</style><div style="max-width:560px;margin:0 auto;padding:12px;font-family:\'Plus Jakarta Sans\',system-ui,sans-serif;background:#f3f6f4;min-height:100vh"><h2 style="margin:6px 0">Post banayein</h2><p style="color:#5b6c62;font-size:13px;margin:0 0 8px">Item chunein, tasveer ban jayegi. Phir WhatsApp par link ke saath share karein.</p><div id="pv"></div>'+
+vis.map(function(p){return '<div class="pc">'+(p.img?'<img src="'+p.img+'" alt="">':'<div class="pi">'+esc(p.n.charAt(0))+'</div>')+'<div style="flex:1;min-width:0"><b>'+esc(p.n)+'</b><div style="font-size:12px;color:#5b6c62">Box '+rs(p.b)+' · Cotton '+rs(p.k)+'/box</div></div><button class="pb" onclick="mkPost('+p.id+')">🖼 Post</button></div>'}).join("")+'</div>'}
+function rr(x,a,b,w,h,r,f){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath();x.fillStyle=f;x.fill()}
+function tx(x,s,a,b,sz,c,w){x.font=w+" "+sz+"px 'Plus Jakarta Sans',system-ui,sans-serif";x.fillStyle=c;x.textAlign="center";x.textBaseline="middle";var m=x.measureText(s).width;if(m>920){sz=Math.floor(sz*920/m);x.font=w+" "+sz+"px 'Plus Jakarta Sans',system-ui,sans-serif"}x.fillText(s,a,b)}
+function limg(u){return new Promise(function(ok){var i=new Image();i.onload=function(){ok(i)};i.onerror=function(){ok(null)};i.src=u})}
+async function mkPost(id){
+var p=P(id),pv=document.getElementById("pv");pv.innerHTML='<p>Post ban rahi hai…</p>';
+try{await document.fonts.load("800 40px 'Plus Jakarta Sans'");await document.fonts.ready}catch(e){}
+var cv=document.createElement("canvas");cv.width=cv.height=1080;var x=cv.getContext("2d"),W=1080;
+var g=x.createLinearGradient(0,0,0,W);g.addColorStop(0,"#08462c");g.addColorStop(1,"#126a42");x.fillStyle=g;x.fillRect(0,0,W,W);
+tx(x,"GHOUSIA TRADERS",W/2,70,56,"#f4c430","800");tx(x,"General & Herbal Wholesale · Karachi",W/2,122,26,"#e6f3ea","400");
+rr(x,90,170,W-180,520,36,"#ffffff");
+var im=p.img?await limg(p.img):null;
+if(im){var r=Math.min(560/im.width,480/im.height);x.drawImage(im,(W-im.width*r)/2-30,185+(500-im.height*r)/2,im.width*r,im.height*r)}else tx(x,p.n.charAt(0),W/2-30,430,200,"#1b7a4c","800");
+x.beginPath();x.arc(855,265,115,0,7);x.fillStyle="#e53935";x.fill();
+tx(x,"WHOLESALE",855,225,26,"#fff","800");tx(x,"RATE",855,275,40,"#fff","800");tx(x,"Aaj ka",855,325,24,"#fff","400");
+tx(x,p.n,W/2,745,58,"#ffffff","800");tx(x,p.u,W/2,800,28,"#d4eadb","400");
+rr(x,90,835,440,100,24,"#f4c430");tx(x,"BOX RATE",310,868,24,"#3a2e00","800");tx(x,rs(p.b),310,907,48,"#1a1400","800");
+rr(x,550,835,440,100,24,"#ffffff");tx(x,"COTTON ("+p.q+" box) per box",770,868,22,"#0f5132","800");tx(x,rs(p.k),770,907,48,"#0f5132","800");
+x.fillStyle="#06301f";x.fillRect(0,975,W,105);
+var o=offs().slice().reverse()[0],base=location.origin+location.pathname;
+tx(x,"Order WhatsApp: 0305 1289250"+(o?"   |   Rs "+o.m.toLocaleString("en-PK")+" par "+o.t+" FREE":""),W/2,1003,24,"#f4c430","800");
+tx(x,base.replace(/^https?:\/\//,""),W/2,1050,24,"#e6f3ea","400");
+var bl=await new Promise(function(ok){cv.toBlob(ok,"image/png")});
+var nm=p.n.replace(/[^A-Za-z0-9]+/g,"-").replace(/^-|-$/g,"")||"item";
+PF=new File([bl],"Post-"+nm+".png",{type:"image/png"});
+PF.cap="*Ghousia Traders*\n"+p.n+"\nBox: "+rs(p.b)+" | Cotton: "+rs(p.k)+"/box ("+p.q+" box)\n\nOrder karne ke liye website kholein 👇\n"+base+"\nWhatsApp: 0305 1289250";
+pv.innerHTML='<div style="background:#fff;border-radius:14px;padding:10px;margin-bottom:10px"><img src="'+URL.createObjectURL(bl)+'" style="width:100%;border-radius:10px"><div style="display:flex;gap:8px;margin-top:8px"><button class="pb" style="flex:1;background:#25d366;color:#05260f" onclick="pShare()">📤 WhatsApp par share</button><button class="pb" style="background:#555" onclick="pDl()">⬇ Download</button></div><p style="font-size:12px;color:#5b6c62;margin:6px 0 0">Share ke saath neeche ka link khud likha aayega.</p></div>';
+pv.scrollIntoView({behavior:"smooth"})}
+async function pShare(){
+try{if(navigator.canShare&&navigator.canShare({files:[PF]}))await navigator.share({files:[PF],text:PF.cap});else pDl()}catch(e){if(!e||e.name!=="AbortError")pDl()}}
+function pDl(){var a=document.createElement("a");a.href=URL.createObjectURL(PF);a.download=PF.name;document.body.appendChild(a);a.click();a.remove()}
 
 $("q").oninput=render;
 var inf=ld();if(inf){$("nm").value=inf.nm||"";$("ph").value=inf.ph||""}
